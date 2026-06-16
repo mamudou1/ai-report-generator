@@ -3,11 +3,11 @@
 // Change these values (or set them via .env.local) to match your company.
 
 export const companyConfig = {
-  name:    process.env.COMPANY_NAME    || "Acme Corporation",
-  address: process.env.COMPANY_ADDRESS || "123 Business Avenue, Suite 100, Banjul, The Gambia",
-  email:   process.env.COMPANY_EMAIL   || "info@acme.com",
+  name:    process.env.COMPANY_NAME    || "Robotspraak Company",
+  address: process.env.COMPANY_ADDRESS || "Manjai, Banjul, The Gambia",
+  email:   process.env.COMPANY_EMAIL   || "info@robotspraak.nl",
   phone:   process.env.COMPANY_PHONE   || "+220 000 0000",
-  website: process.env.COMPANY_WEBSITE || "www.acme.com",
+  website: process.env.COMPANY_WEBSITE || "www.robotspraak.nl",
 
   // ── Brand colours (used by PDF & DOCX generators) ──
   colors: {

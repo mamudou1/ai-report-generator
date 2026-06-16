@@ -1,7 +1,4 @@
-// lib/anthropic.ts
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// lib/anthropic.ts  (now uses Eden AI)
 
 export interface GenerateReportInput {
   title:      string;
@@ -32,16 +29,38 @@ Structure the report with these sections:
 5. ## Recommendations
 6. ## Conclusion
 
-Be specific, data-aware, and authoritative. Each section should be substantive (at least 2–4 sentences or a well-formed list).`;
+Be specific, data-aware, and authoritative.`;
 
-  const message = await client.messages.create({
-    model:      "claude-sonnet-4-6",
-    max_tokens: 2000,
-    system:     systemPrompt,
-    messages:   [{ role: "user", content: userPrompt }],
+  // ── Eden AI unified chat endpoint ────────────────────────────────────────
+  const response = await fetch("https://api.edenai.run/v2/text/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type":  "application/json",
+      "Authorization": `Bearer ${process.env.EDENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      providers:   `anthropic/${process.env.EDENAI_MODEL ?? "claude-haiku-4-5"}`,
+      text:        userPrompt,
+      chatbot_global_action: systemPrompt,   // Eden AI's system prompt field
+      previous_history:      [],             // no prior turns
+      temperature:           0.7,
+      max_tokens:            2000,
+    }),
   });
 
-  const block = message.content[0];
-  if (block.type !== "text") throw new Error("Unexpected response type from Claude");
-  return block.text;
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`Eden AI error ${response.status}: ${err}`);
+  }
+
+  const data = await response.json();
+
+  // ── Parse Eden AI response structure ─────────────────────────────────────
+  // Shape: { "anthropic/claude-haiku-4-5": { generated_text: "..." } }
+  const providerKey = Object.keys(data).find((k) => k.startsWith("anthropic"));
+  if (!providerKey || !data[providerKey]?.generated_text) {
+    throw new Error("Unexpected Eden AI response shape");
+  }
+
+  return data[providerKey].generated_text as string;
 }
