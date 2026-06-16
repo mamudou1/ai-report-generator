@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const { title, content, format, reportType } = body as {
       title:      string;
       content:    string;
-      format:     string;   // "pdf" | "docx"
+      format:     string;
       reportType: string;
     };
 
@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
 
     if (format === "docx") {
       const buffer = await generateDocx({ title, content, reportType });
-      return new NextResponse(buffer, {
+      // ✅ Convert Buffer → Uint8Array (required by Next.js 15)
+      return new NextResponse(new Uint8Array(buffer), {
         headers: {
           "Content-Type":        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           "Content-Disposition": `attachment; filename="${safeTitle}.docx"`,
@@ -29,9 +30,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // default → PDF
     const buffer = await generatePdf({ title, content, reportType });
-    return new NextResponse(buffer, {
+    // ✅ Convert Buffer → Uint8Array (required by Next.js 15)
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type":        "application/pdf",
         "Content-Disposition": `attachment; filename="${safeTitle}.pdf"`,
