@@ -3,18 +3,7 @@
 
 import { useMutation } from "convex/react";
 import { api }         from "@/convex/_generated/api";
-import { Id }          from "@/convex/_generated/dataModel";
-
-interface Report {
-  _id:        Id<"reports">;
-  title:      string;
-  reportType: string;
-  format:     string;
-  createdAt:  number;
-  wordCount?: number;
-  content:    string;
-  topic:      string;
-}
+import { Report }      from "@/lib/types";
 
 interface ReportListProps {
   reports:   Report[];
@@ -31,7 +20,7 @@ export default function ReportList({ reports, activeId, onSelect, onDownload }: 
 
   if (reports.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+      <div className="flex flex-col items-center justify-center h-full px-6 text-center py-16">
         <div className="text-4xl mb-3">🗂️</div>
         <p className="text-sm text-slate-400 font-medium">No reports yet</p>
         <p className="text-xs text-slate-300 mt-1">Generated reports will appear here</p>
@@ -56,17 +45,16 @@ export default function ReportList({ reports, activeId, onSelect, onDownload }: 
                               ? "bg-blue-50 border border-blue-200"
                               : "hover:bg-slate-50 border border-transparent"}`}
               >
-                {/* Title */}
                 <p className={`text-sm font-semibold truncate leading-tight
                                ${isActive ? "text-blue-800" : "text-slate-700"}`}>
                   {r.title}
                 </p>
 
-                {/* Meta row */}
                 <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                   <span className="text-[10px] text-slate-400">{r.reportType}</span>
                   <span className="text-[10px] text-slate-300">·</span>
-                  <span className={`text-[10px] font-semibold uppercase ${r.format === "pdf" ? "text-red-400" : "text-blue-400"}`}>
+                  <span className={`text-[10px] font-semibold uppercase
+                                   ${r.format === "pdf" ? "text-red-400" : "text-blue-400"}`}>
                     {r.format}
                   </span>
                   {r.wordCount && (
@@ -78,7 +66,6 @@ export default function ReportList({ reports, activeId, onSelect, onDownload }: 
                 </div>
                 <p className="text-[10px] text-slate-300 mt-0.5">{fmt(r.createdAt)}</p>
 
-                {/* Action buttons — appear on hover / when active */}
                 <div className={`flex gap-2 mt-2 ${isActive ? "flex" : "hidden group-hover:flex"}`}>
                   <button
                     onClick={(e) => { e.stopPropagation(); onDownload(r); }}
