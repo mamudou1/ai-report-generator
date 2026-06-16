@@ -1,9 +1,8 @@
+// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["pdfkit"],
-  },
+  serverExternalPackages: ["pdfkit"],   // ← moved out of experimental
 };
 
 export default nextConfig;
